@@ -121,7 +121,7 @@ DIMMER_MODE_typedef dimmerLamp::getMode(void)
 
 void dimmerLamp::setMode(DIMMER_MODE_typedef DIMMER_MODE)
 {
-	dimMode[this->current_num] = DIMMER_MODE;
+    dimMode[this->current_num] = DIMMER_MODE;
 }
 
 void dimmerLamp::toggleSettings(int minValue, int maxValue)
@@ -163,39 +163,34 @@ void IRAM_ATTR onTimerISR()
 
 			if (dimMode[k] == TOGGLE_MODE)
 			{
-			/*****
-			 * TOGGLE DIMMING MODE
-			 *****/
-			if (dimPulseBegin[k] >= togMax[k]) 	
+				/*****
+				 * TOGGLE_MODE
+				 *****/
+				if(dimState[k] == ON)
+				{
+					digitalWrite(dimOutPin[k], HIGH);	
+				}
+				else
+				{
+					digitalWrite(dimOutPin[k], LOW);	
+				}
+			}
+			else
 			{
-				// if reach max dimming value 
-				togDir[k] = false;	// downcount				
-			}
-			if (dimPulseBegin[k] <= togMin[k])
-			{
-				// if reach min dimming value 
-				togDir[k] = true;	// upcount
-			}
-			if (toggleCounter == toggleReload) 
-			{
-				if (togDir[k] == true) dimPulseBegin[k]++;
-				else dimPulseBegin[k]--;
-			}
-			}
-			
-			/*****
-			 * DEFAULT DIMMING MODE (NOT TOGGLE)
-			 *****/
-			if (dimCounter[k] >= dimPulseBegin[k] )
-			{
-				digitalWrite(dimOutPin[k], HIGH);	
-			}
+				/*****
+				 * DEFAULT DIMMING MODE (NOT TOGGLE)
+				 *****/
+				if (dimCounter[k] >= dimPulseBegin[k] )
+				{
+					digitalWrite(dimOutPin[k], HIGH);	
+				}
 
-			if (dimCounter[k] >=  (dimPulseBegin[k] + pulseWidth) )
-			{
-				digitalWrite(dimOutPin[k], LOW);
-				zeroCross[k] = 0;
-				dimCounter[k] = 0;
+				if (dimCounter[k] >=  (dimPulseBegin[k] + pulseWidth) )
+				{
+					digitalWrite(dimOutPin[k], LOW);
+					zeroCross[k] = 0;
+					dimCounter[k] = 0;
+				}
 			}
 		}
 	}
